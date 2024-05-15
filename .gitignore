@@ -1,0 +1,5 @@
+myenv/
+brainboost_data_tools_json_package-*.json
+.vscode
+.pytest_cache
+__pycache__
