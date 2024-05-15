@@ -3,3 +3,4 @@ brainboost_data_tools_json_package-*.json
 .vscode
 .pytest_cache
 __pycache__
+custom_merged_data.json
