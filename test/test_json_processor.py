@@ -6,8 +6,8 @@ from tinydb import TinyDB, Query
 from src.brainboost_data_tools_json_package.JSonProcessor import JSonProcessor
 
 # Define the test directory path containing sample JSON files
-TEST_DIR = '/brainboost/brainboost_data/data_tools/tools_goldenthinkerextractor_dataprocessing/resources/resources_data/data_subjective'
-TEST_DB_PATH = 'test_tinydb.json'
+TEST_DIR = '/brainboost/brainboost_data/data_storage/storage_local/brainboost_data_storage_local_contacts'
+TEST_DB_PATH = '/brainboost/brainboost_data/data_storage/storage_local/brainboost_data_storage_local_contacts/contacts.json'
 
 # Define a fixture to set up and tear down the TinyDB instance
 @pytest.fixture(scope="module")
