@@ -94,17 +94,11 @@ class JSonProcessor:
                 print(f"Error occurred while writing to {output_file}: {e}")
 
     
-    def to_tinydb(self,from_path,to_tinydb_json_file,log=False):
+    def to_tinydb(self,from_path,to_tinydb_json_file):
         if self.my_db == None:
             self.my_db = TinyDB(to_tinydb_json_file)
-        json_array = self.load_json_files_recursively(from_path=from_path)   
-        if log == True: 
-            print('Amount of elements to insert:' + str(len(json_array)))
-        counter_log = 0
+        json_array = self.load_json_files_recursively(from_path=from_path)        
         for element in json_array:
             self.my_db.insert(element)
-            if counter_log % 1000 == 0:
-                print('Processed ' + str(counter_log) + ' elements. Continue...')
-            counter_log = counter_log + 1
         return self.my_db
         

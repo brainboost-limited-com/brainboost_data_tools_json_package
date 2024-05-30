@@ -1,6 +1,6 @@
 README.md
 setup.py
-src/brainboost_data_tools_json_package/JsonProcessor.py
+src/brainboost_data_tools_json_package/JSonProcessor.py
 src/brainboost_data_tools_json_package/__init__.py
 src/brainboost_data_tools_json_package.egg-info/PKG-INFO
 src/brainboost_data_tools_json_package.egg-info/SOURCES.txt
