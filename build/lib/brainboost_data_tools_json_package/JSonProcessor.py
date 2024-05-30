@@ -3,7 +3,7 @@ import json
 import os
 from datetime import datetime 
 from tinydb import TinyDB, where
-
+from progress.bar import Bar
 
 class JSonProcessor:
 
@@ -94,11 +94,25 @@ class JSonProcessor:
                 print(f"Error occurred while writing to {output_file}: {e}")
 
     
-    def to_tinydb(self,from_path,to_tinydb_json_file):
-        if self.my_db == None:
-            self.my_db = TinyDB(to_tinydb_json_file)
-        json_array = self.load_json_files_recursively(from_path=from_path)        
-        for element in json_array:
-            self.my_db.insert(element)
-        return self.my_db
+    def to_tinydb(self, from_path, to_tinydb_json_file, log=False):
+            if self.my_db is None:
+                self.my_db = TinyDB(to_tinydb_json_file)
+            json_array = self.load_json_files_recursively(from_path=from_path)
+            if log:
+                print('Amount of elements to insert: ' + str(len(json_array)))
+                bar = Bar('Inserting', max=len(json_array))
+
+            counter_log = 0
+            for element in json_array:
+                self.my_db.insert(element)
+                if log:
+                    bar.next()
+                if counter_log % 1000 == 0 and log:
+                    print('Processed ' + str(counter_log) + ' elements. Continue...')
+                counter_log += 1
+
+            if log:
+                bar.finish()
+
+            return self.my_db
         
