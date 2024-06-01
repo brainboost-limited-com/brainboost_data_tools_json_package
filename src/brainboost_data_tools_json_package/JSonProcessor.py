@@ -95,24 +95,28 @@ class JSonProcessor:
 
     
     def to_tinydb(self, from_path, to_tinydb_json_file, log=False):
-            if self.my_db is None:
-                self.my_db = TinyDB(to_tinydb_json_file)
-            json_array = self.load_json_files_recursively(from_path=from_path)
+        if self.my_db is None:
+            self.my_db = TinyDB(to_tinydb_json_file)
+
+        json_array = self.load_json_files_recursively(from_path=from_path)
+        existing_count = len(self.my_db.all())
+
+        if log:
+            print('Amount of elements to insert: ' + str(len(json_array)))
+            bar = Bar('Inserting', max=len(json_array) - existing_count)
+
+        counter_log = existing_count
+        for index, element in enumerate(json_array):
+            if index < existing_count:
+                continue
+            self.my_db.insert(element)
             if log:
-                print('Amount of elements to insert: ' + str(len(json_array)))
-                bar = Bar('Inserting', max=len(json_array))
+                bar.next()
+            if counter_log % 1000 == 0 and log:
+                print('Processed ' + str(counter_log) + ' elements. Continue...')
+            counter_log += 1
 
-            counter_log = 0
-            for element in json_array:
-                self.my_db.insert(element)
-                if log:
-                    bar.next()
-                if counter_log % 1000 == 0 and log:
-                    print('Processed ' + str(counter_log) + ' elements. Continue...')
-                counter_log += 1
+        if log:
+            bar.finish()
 
-            if log:
-                bar.finish()
-
-            return self.my_db
-        
+        return self.my_db
