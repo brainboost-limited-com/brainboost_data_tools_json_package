@@ -1,21 +1,17 @@
-
 import json
 import os
-from datetime import datetime 
+from datetime import datetime
 from tinydb import TinyDB, where
-from progress.bar import Bar
+from alive_progress import alive_bar
 
 class JSonProcessor:
 
     def __init__(self):
         self.my_db = None
-        pass
-
 
     def load_json_files_recursively(self, from_path):
-
         merged_json_array = []  # List to store merged JSON arrays
-        
+
         # Walk through the directory tree recursively
         for root, dirs, files in os.walk(from_path):
             for filename in files:
@@ -33,20 +29,18 @@ class JSonProcessor:
                                 merged_json_array.append(json_data)
                     except Exception as e:
                         print(f"Error loading JSON file '{file_path}': {e}")
-        
-        return merged_json_array
-    
 
-    def collect_values_of_particular_key_to_set(self,json_array, key):
+        return merged_json_array
+
+    def collect_values_of_particular_key_to_set(self, json_array, key):
         values_set = set()
-        
+
         for item in json_array:
             if key in item:
                 values_set.add(item[key])
-        
+
         return values_set
 
- 
     def write(self, json_data, output_file_path=None):
 
         def generate_default_filename():
@@ -70,7 +64,6 @@ class JSonProcessor:
         except Exception as e:
             print(f"Error writing JSON data to file '{output_file_path}': {e}")
             return False
-        
 
     def add_calculated_field_to_the_objects_from_an_array(self, records, field_name, calculation_func):
         # Iterate over each record in the array
@@ -79,21 +72,19 @@ class JSonProcessor:
             calculated_value = calculation_func(record)
             # Add the calculated value as a new field to the record
             record[field_name] = calculated_value
-        
+
         # Return the updated list of records with the new field added
         return records
-    
 
     def write_to_json_file(self, data, output_file):
 
-            try:
-                with open(output_file, 'w') as file:
-                    json.dump(data, file, indent=4)  # Serialize data to JSON and write to file
-                print(f"Data successfully written to {output_file}")
-            except Exception as e:
-                print(f"Error occurred while writing to {output_file}: {e}")
+        try:
+            with open(output_file, 'w') as file:
+                json.dump(data, file, indent=4)  # Serialize data to JSON and write to file
+            print(f"Data successfully written to {output_file}")
+        except Exception as e:
+            print(f"Error occurred while writing to {output_file}: {e}")
 
-    
     def to_tinydb(self, from_path, to_tinydb_json_file, log=False):
         if self.my_db is None:
             self.my_db = TinyDB(to_tinydb_json_file)
@@ -102,21 +93,21 @@ class JSonProcessor:
         existing_count = len(self.my_db.all())
 
         if log:
-            print('Amount of elements to insert: ' + str(len(json_array)))
-            bar = Bar('Inserting', max=len(json_array) - existing_count)
+            print('Amount of elements to insert: ' + str(len(json_array) - existing_count))
 
         counter_log = existing_count
-        for index, element in enumerate(json_array):
-            if index < existing_count:
-                continue
-            self.my_db.insert(element)
-            if log:
-                bar.next()
-            if counter_log % 1000 == 0 and log:
-                print('Processed ' + str(counter_log) + ' elements. Continue...')
-            counter_log += 1
+        total_to_process = len(json_array)
+        index = existing_count
+        print('Starting from the last processed element: ' + str(index))
+        print('CData' + str(json_array[index]))
 
-        if log:
-            bar.finish()
+        with alive_bar(total=total_to_process - index, title='Inserting') as bar:
+            bar(index)  # Set the initial value of the bar to the starting index
+            for i in range(index, total_to_process):
+                self.my_db.insert(json_array[i])
+                bar()
+                if counter_log % 1000 == 0:
+                    print('Processed ' + str(counter_log) + ' elements. Continue...')
+                counter_log += 1
 
         return self.my_db
