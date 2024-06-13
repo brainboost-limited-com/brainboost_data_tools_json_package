@@ -99,7 +99,7 @@ class JSonProcessor:
         total_to_process = len(json_array)
         index = existing_count
         print('Starting from the last processed element: ' + str(index))
-        print('CData' + str(json_array[index]))
+        #print('CData' + str(json_array[index-1]))
 
         with alive_bar(total=total_to_process - index, title='Inserting') as bar:
             bar(index)  # Set the initial value of the bar to the starting index
